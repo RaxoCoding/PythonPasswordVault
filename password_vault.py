@@ -154,6 +154,9 @@ def vaultScreen():
         while True:
             cursor.execute('SELECT * FROM vault')
             array = cursor.fetchall()
+            
+            if (len(array) == 0):
+                break
 
             lbl1 = Label(window, text=(array[i][1]), font=("Helvetica", 12))
             lbl1.grid(column=0, row=(i+3))
