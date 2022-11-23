@@ -69,6 +69,8 @@ def hashPassword(input):
     return hash1
 
 def firstTimeScreen():
+    cursor.execute('DELETE FROM vault')
+        
     for widget in window.winfo_children():
         widget.destroy()
 
