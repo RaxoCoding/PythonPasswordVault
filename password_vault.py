@@ -134,6 +134,9 @@ def firstTimeScreen(hasMasterKey=None):
             # if it does not, generate a masterkey and encrypt it with new password hash, and new recoverykey hash
             masterKey = hasMasterKey if hasMasterKey else genPassword(64)
             cursor.execute("SELECT * FROM masterkey")
+            if cursor.fetchall():
+                cursor.execute("DELETE FROM masterkey WHERE id = 1")
+
             insert_masterkey = """INSERT INTO masterkey(masterKeyPassword, masterKeyRecoveryKey)
             VALUES(?, ?) """
             cursor.execute(
@@ -270,6 +273,8 @@ def loginScreen():
             masterKeyEntry = cursor.fetchall()
             if masterKeyEntry:
                 masterKeyPassword = masterKeyEntry[0][1]          
+
+                print(txt.get().encode())
                 
                 masterKey = decrypt(masterKeyPassword, base64.urlsafe_b64encode(kdf().derive(txt.get().encode())))  
 
