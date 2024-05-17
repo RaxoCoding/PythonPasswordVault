@@ -139,8 +139,8 @@ def firstTimeScreen(hasMasterKey=None):
             cursor.execute(
                 insert_masterkey,
                 (
-                    (encrypt(masterKey.encode(), base64.urlsafe_b64encode(kdf().derive(hashedPassword.encode())))),
-                    (encrypt(masterKey.encode(), base64.urlsafe_b64encode(kdf().derive(hashedRecoveryKey.encode())))),
+                    (encrypt(masterKey.encode(), base64.urlsafe_b64encode(kdf().derive(txt.get().encode())))),
+                    (encrypt(masterKey.encode(), base64.urlsafe_b64encode(kdf().derive(key.encode())))),
                 ),
             )
 
@@ -202,7 +202,7 @@ def resetScreen():
     lbl1.pack()
 
     def getRecoveryKey():
-        recoveryKeyCheck = hashPassword(str(txt.get()).encode("utf-8"))
+        recoveryKeyCheck = hashPassword(str(txt.get()).encode())
         cursor.execute(
             "SELECT * FROM masterpassword WHERE id = 1 AND recoveryKey = ?",
             [(recoveryKeyCheck)],
@@ -220,7 +220,7 @@ def resetScreen():
             if masterKeyEntry:
                 masterKeyRecoveryKey = masterKeyEntry[0][2]          
                 
-                masterKey = decrypt(masterKeyRecoveryKey, base64.urlsafe_b64encode(kdf().derive(recoveryKey[0][2].encode()))).decode()
+                masterKey = decrypt(masterKeyRecoveryKey, base64.urlsafe_b64encode(kdf().derive(str(txt.get()).encode()))).decode()
 
                 firstTimeScreen(masterKey)
             else:
@@ -253,7 +253,7 @@ def loginScreen():
     lbl1.pack(side=TOP)
 
     def getMasterPassword():
-        checkHashedPassword = hashPassword(txt.get().encode("utf-8"))
+        checkHashedPassword = hashPassword(txt.get().encode())
 
         cursor.execute(
             "SELECT * FROM masterpassword WHERE id = 1 AND password = ?",
@@ -271,7 +271,7 @@ def loginScreen():
             if masterKeyEntry:
                 masterKeyPassword = masterKeyEntry[0][1]          
                 
-                masterKey = decrypt(masterKeyPassword, base64.urlsafe_b64encode(kdf().derive(password[0][1].encode())))  
+                masterKey = decrypt(masterKeyPassword, base64.urlsafe_b64encode(kdf().derive(txt.get().encode())))  
 
                 global encryptionKey
                 encryptionKey = base64.urlsafe_b64encode(kdf().derive(masterKey))
